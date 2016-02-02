@@ -1,0 +1,3 @@
+#!/bin/bash
+APPLICATION_FILE='/var/www/html/openclinic/medical/patient_search.php'
+php taint_analysis_main.php $APPLICATION_FILE
