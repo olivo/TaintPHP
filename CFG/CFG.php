@@ -5,7 +5,7 @@ include_once "CFGNodeCond.php";
 include_once "CFGNodeLoopHeader.php";
 include_once "CFGNodeStmt.php";
 include_once "FunctionSignature.php";
-include_once "PHP-Parser-master/lib/bootstrap.php";
+include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 include_once "StmtProcessing.php";
 
 

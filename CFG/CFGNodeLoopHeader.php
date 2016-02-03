@@ -1,6 +1,6 @@
 <?php
 include_once "CFGNode.php";
-include_once "PHP-Parser-master/lib/bootstrap.php";
+include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 
 // Class that represents a loop header.
 class CFGNodeLoopHeader extends CFGNode {

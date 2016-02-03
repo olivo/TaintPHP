@@ -1,8 +1,7 @@
 <?php
 
 // Helper functions for handling Stmts for PHP-Parser.
-
-include_once "PHP-Parser-master/lib/bootstrap.php";
+include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 
 // Gets the string representation of the LHS variable
 // in an assignment.
