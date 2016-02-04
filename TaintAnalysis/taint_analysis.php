@@ -177,21 +177,39 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 		    // assignment that propagates taint.
 	       	    if ($current_node->isWhileLoop()) {
 
-		       if (isTainted($current_node->expr->cond, $user_tainted_variables_map[$current_node], True)
-			    || ($current_node->expr->cond instanceof PhpParser\Node\Expr\Assign 
-			        && isTainted($current_node->expr->cond->expr, $user_tainted_variables_map[$current_node], True))) {
-		       
-				print "While Loop is user-tainted.\n";
-		       }
+		       // Propagate taint when the conditional consists of an assignment.
+		       if ($current_node->expr->cond instanceof PhpParser\Node\Expr\Assign) {
 
-		       if (isTainted($current_node->expr->cond, $secret_tainted_variables_map[$current_node], False)
-			    || ($current_node->expr->cond instanceof PhpParser\Node\Expr\Assign 
-			        && isTainted($current_node->expr->cond->expr, $secret_tainted_variables_map[$current_node], False))) {
-		       
-				print "While Loop is secret-tainted.\n";
+		       	  if (!$user_tainted_variables_map[$current_node]->contains($current_node->expr->cond->var->name)
+		              && isTainted($current_node->expr->cond->expr, $user_tainted_variables_map[$current_node], True)) {
+		       	  
+				print "The variable " . ($current_node->expr->cond->var->name) . "became user tainted.\n";
+			  	$user_tainted_variables_map[$current_node]->attach($current_node->expr->cond->var->name);
+	       	    	  	print "WARNING: Loop header node is user-tainted:\n";
+		       	  }
+
+		       	  if (!$secret_tainted_variables_map[$current_node]->contains($current_node->expr->cond->var->name)
+		              && isTainted($current_node->expr->cond->expr, $secret_tainted_variables_map[$current_node], False)) {
+		       	  
+				print "The variable " . ($current_node->expr->cond->var->name) . "became secret tainted.\n";
+			  	$secret_tainted_variables_map[$current_node]->attach($current_node->expr->cond->var->name);
+	       	    	  	print "WARNING: Loop header node is secret-tainted:\n";
+		       	  }
 		       }
-	       	    }
-	       }
+		       else {
+
+		       	    if (isTainted($current_node->expr->cond, $user_tainted_variables_map[$current_node], True)) {
+		       
+					print "While Loop is user-tainted.\n";
+		       	    }
+
+		       	    if (isTainted($current_node->expr->cond, $secret_tainted_variables_map[$current_node], False)) {
+		       
+					print "While Loop is secret-tainted.\n";
+		       	    }
+	       	       }
+	       	     }
+	      }
 }
 
 // Performs a flow-sensitive forward taint analysis.
