@@ -299,6 +299,8 @@ function taint_analysis($main_cfg, $function_cfgs, $function_signatures) {
 	print "\n";
 	print "==============================\n";
 
+	return array($user_tainted_variables_map, $secret_tainted_variables_map);
+
 }
 
 ?>
