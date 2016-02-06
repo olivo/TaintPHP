@@ -1,9 +1,7 @@
 <?php
 
 include_once "PHP-Parser-master/lib/bootstrap.php";
-
 include_once "TaintAnalysis/taint_analysis.php";
-
 include_once "CFG/CFG.php";
 
 $filename = $argv[1];
