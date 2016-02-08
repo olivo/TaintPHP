@@ -209,6 +209,22 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 		       	    }
 	       	       }
 	       	     }
+		     else if ($current_node->isForLoop()) {
+		     	  
+			  // Detect taint for conditional expressions of the for loop.
+			  foreach ($current_node->expr->cond as $condExpr) {
+			  
+				if (isTainted($condExpr, $user_tainted_variables_map[$current_node], True)) {
+		       
+					print "For Loop condition is user-tainted.\n";
+		       	        }
+
+		       	        if (isTainted($condExpr, $secret_tainted_variables_map[$current_node], False)) {
+		       
+					print "For Loop is secret-tainted.\n";
+		       	        }	  
+			  }
+		     }
 	      }
 }
 
