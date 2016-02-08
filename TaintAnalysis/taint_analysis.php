@@ -225,6 +225,22 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 		       	        }	  
 			  }
 		     }
+		     else if ($current_node->isForeachLoop()) {
+		     	  
+			  // Detect taint for source expression of the foreach loop.
+			  foreach ($current_node->expr->expr as $sourceExpr) {
+			  
+				if (isTainted($sourceExpr, $user_tainted_variables_map[$current_node], True)) {
+		       
+					print "Foreach Loop condition is user-tainted.\n";
+		       	        }
+
+		       	        if (isTainted($sourceExpr, $secret_tainted_variables_map[$current_node], False)) {
+		       
+					print "Foreach Loop is secret-tainted.\n";
+		       	        }	  
+			  }
+		     }
 	      }
 }
 
