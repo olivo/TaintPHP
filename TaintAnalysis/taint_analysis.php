@@ -7,6 +7,21 @@ include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 include_once(dirname(__FILE__) . '/../CFG/StmtProcessing.php');
 include_once('TaintedVariables.php');
 
+// Checks whether a conditional node is tainted.
+function isSecretTaintedCFGNodeCond($current_node, $taint_set) {
+
+	 // If the conditional contains an assignment, propagate its taint
+         // besides checking for taint in the conditional.
+	 if ($current_node->expr instanceof PhpParser\Node\Expr\Assign) {
+
+	    	return isTainted($current_node->expr->expr, $tainted_set, False);
+         }
+         else {
+	       	        
+		return isTainted($current_node->expr, $taint_set, False);
+         }
+}
+
 // TODO: Change hardwired notions of taint for a specific application.
 // Checks whether an expression is tainted, by checking whether a parameter is a tainted variable or a user/secret input. The $user_taint parameter is True when checking for user taint, and 
 // false when checking for secret taint.
