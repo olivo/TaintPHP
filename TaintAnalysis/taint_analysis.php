@@ -259,8 +259,16 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 	      }
 }
 
-// Performs a flow-sensitive forward taint analysis.
+// Performs a flow-sensitive forward taint analysis on the defined functions
+// and the main code.
 function taint_analysis($main_cfg, $function_cfgs, $function_signatures) {
+
+	 $taint_maps = cfg_taint_analysis($main_cfg);
+	 return $taint_maps;
+}
+
+// Performs a flow-sensitive forward taint analysis on a CFG.
+function cfg_taint_analysis($cfg) {
 
 	 print "Starting Taint Analysis.\n";
 
@@ -270,7 +278,7 @@ function taint_analysis($main_cfg, $function_cfgs, $function_signatures) {
 	 $secret_tainted_variables_map = new SplObjectStorage();
 
 	 // Forward flow-sensitive taint-analysis.
-	 $entry_node = $main_cfg->entry;
+	 $entry_node = $cfg->entry;
 	 $q = new SplQueue();
 	 $q->enqueue($entry_node);
 
@@ -337,12 +345,12 @@ function taint_analysis($main_cfg, $function_cfgs, $function_signatures) {
 
 	print "==============================\n";
 	print "The user tainted variables at the exit node are:\n";
-	$user_tainted_variables_map[$main_cfg->exit]->printTaintedVariables();
+	$user_tainted_variables_map[$cfg->exit]->printTaintedVariables();
 	print "\n";
 	print "==============================\n";
 	print "==============================\n";
 	print "The secret tainted variables at the exit node are:\n";
-	$secret_tainted_variables_map[$main_cfg->exit]->printTaintedVariables();
+	$secret_tainted_variables_map[$cfg->exit]->printTaintedVariables();
 	print "\n";
 	print "==============================\n";
 
