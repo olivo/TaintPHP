@@ -263,8 +263,20 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 // and the main code.
 function taint_analysis($main_cfg, $function_cfgs, $function_signatures) {
 
-	 $taint_maps = cfg_taint_analysis($main_cfg);
-	 return $taint_maps;
+	 // Construction the taint map for the main function.
+	 $main_taint_map = cfg_taint_analysis($main_cfg);
+
+
+	 // Constructing the taint maps for each internal function.	 
+	 $function_taint_maps = array();
+
+	 foreach ($function_cfgs as $function_name => $function_cfg) {
+
+	 	 $function_taint_map = cfg_taint_analysis($function_cfg);
+		 $function_taint_maps[$function_name] = $function_taint_map;
+	 }
+
+	 return array($main_taint_map, $function_taint_maps);
 }
 
 // Performs a flow-sensitive forward taint analysis on a CFG.
@@ -357,5 +369,4 @@ function cfg_taint_analysis($cfg) {
 	return array($user_tainted_variables_map, $secret_tainted_variables_map);
 
 }
-
 ?>
