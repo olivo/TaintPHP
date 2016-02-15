@@ -6,6 +6,7 @@ include_once(dirname(__FILE__) . '/../CFG/CFGNodeStmt.php');
 include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 include_once(dirname(__FILE__) . '/../CFG/StmtProcessing.php');
 include_once('TaintedVariables.php');
+include_once('CFGTaintMap.php');
 
 // Checks whether a conditional node is tainted.
 function isSecretTaintedCFGNodeCond($current_node, $taint_set) {
@@ -366,7 +367,8 @@ function cfg_taint_analysis($cfg) {
 	print "\n";
 	print "==============================\n";
 
-	return array($user_tainted_variables_map, $secret_tainted_variables_map);
-
+	$cfg_taint_map = new CFGTaintMap($user_tainted_variables_map, $secret_tainted_variables_map);
+	
+	return $cfg_taint_map;
 }
 ?>
