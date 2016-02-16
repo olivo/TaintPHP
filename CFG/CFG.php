@@ -195,10 +195,17 @@ class CFG {
 
 	          	  print "Has keys\n";
 
+			  /*
 		  	  foreach($stmt as $key => $value) {
-			  		print "Key=".($key)."\n";
-		   	   }
-
+			  	print "Key=".($key)."\n";
+		   	  }
+			  */
+			  
+			  // Constructing dummy node.
+			  $dummy_node = new CFGNode();
+			  $current_node->successors[] = $dummy_node;
+			  $dummy_node->parents[] = $current_node;
+			  $current_node = $dummy_node;
 		  }
 
 
@@ -537,16 +544,18 @@ function print_preorder($cfg_node, $visited) {
 	       // Map from function name to function signature.
 	       $signatureMap = array();
 
-	       foreach($stmts as $stmt) 
-	       		      if($stmt instanceof PhpParser\Node\Stmt\Function_)	{
-			      $signature = new FunctionSignature($stmt->name,$stmt->params,$stmt->returnType);
+	       foreach($stmts as $stmt) {
 
-			      $name = $stmt->name;
+	       		      if($stmt instanceof PhpParser\Node\Stmt\Function_ || $stmt instanceof PhpParser\Node\Stmt\ClassMethod) {
+			      	       $signature = new FunctionSignature($stmt->name,$stmt->params,$stmt->returnType);
 
-			      $cfg = CFG::construct_cfg($stmt->stmts);
-			      $cfgMap[(string)$stmt->name] = $cfg;
-			      $signatureMap[(string)$stmt->name] = $signature;
-	       }
+			      	       $name = $stmt->name;
+
+			      	       $cfg = CFG::construct_cfg($stmt->stmts);
+			      	       $cfgMap[(string)$stmt->name] = $cfg;
+			      	       $signatureMap[(string)$stmt->name] = $signature;
+	       		      }
+		}
 
 
 	       return array($cfgMap,$signatureMap);
@@ -582,7 +591,19 @@ static function construct_file_cfgs($filename) {
 	// the file.
 
 	echo "Constructing the CFG map of functions.\n";
-	$function_definitions = CFG::process_function_definitions($stmts);
+
+	// If there is only one statement and it's a class definition,
+	// extract the inner class functions.
+	if (count($stmts) == 1 && ($stmts[0] instanceof PhpParser\Node\Stmt\Class_)) {
+
+	         print "Constructing CFG for class\n";
+		 $function_definitions = CFG::process_function_definitions($stmts[0]->stmts);
+	} else {
+
+		 $function_definitions = CFG::process_function_definitions($stmts);
+	}
+
+
 	$function_cfgs = $function_definitions[0];
 	$function_signatures = $function_definitions[1];
 

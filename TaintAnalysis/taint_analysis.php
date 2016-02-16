@@ -29,7 +29,7 @@ function isSecretTaintedCFGNodeCond($current_node, $taint_set) {
 function isTainted($expr, $tainted_variables, $user_taint) {
 
        print "Analyzing expression for taint.\n";
-       print "The class is " . get_class($expr) . "\n";
+       //print "The class is " . get_class($expr) . "\n";
 
        if ($expr == null) {
        
@@ -117,14 +117,14 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 		      	 print "ERROR: Unrecognized LHS type of an assignment while performing taint analysis.\n";
 		      } 
 		     
-		      if (!$user_tainted_variables_map[$current_node]->contains($lhs_var)
+		      if ($lhs_var && !$user_tainted_variables_map[$current_node]->contains($lhs_var)
 		          && isTainted($stmt->expr, $user_tainted_variables_map[$current_node], True)) {
 
 		      	 $user_tainted_variables_map[$current_node]->attach($lhs_var);
 		     	 print "The variable " . ($lhs_var) . " became user-tainted.\n";
 		      }
 
-		      if (!$secret_tainted_variables_map[$current_node]->contains($lhs_var)
+		      if ($lhs_var && !$secret_tainted_variables_map[$current_node]->contains($lhs_var)
 		          && isTainted($stmt->expr, $secret_tainted_variables_map[$current_node], False)) {
 
 		      	 $secret_tainted_variables_map[$current_node]->attach($lhs_var);
@@ -285,6 +285,10 @@ function cfg_taint_analysis($cfg) {
 
 	 print "Starting Taint Analysis.\n";
 
+	 // WARNING: Imposing a bound to avoid infinite loops.
+	 $steps = 0;
+	 $bound = 1000;
+
 	 // Map that contains the set of tainted variables 
 	 // per CFG node.
 	 $user_tainted_variables_map = new SplObjectStorage();
@@ -295,9 +299,11 @@ function cfg_taint_analysis($cfg) {
 	 $q = new SplQueue();
 	 $q->enqueue($entry_node);
 
-	 while (count($q)) {
+	 while (count($q) && $steps < $bound) {
 	       
 	       $current_node = $q->dequeue();
+
+	       $steps++;
 
 	       if (!$user_tainted_variables_map->contains($current_node)) {
 

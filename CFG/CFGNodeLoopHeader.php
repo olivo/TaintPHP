@@ -95,8 +95,10 @@ public function printCFGNode() {
       	 print "[Foreach Loop] : \n";
 
 	 print ($prettyPrinter->prettyPrintExpr($this->expr->expr)) . " ;\n";	 
-	 print ($prettyPrinter->prettyPrintExpr($this->expr->keyVar)) . " ;\n";	 
-	 print ($prettyPrinter->prettyPrintExpr($this->expr->valueVar)) . " ;\n";
+
+	 // TODO: Fix null reference.
+	 //print ($prettyPrinter->prettyPrintExpr($this->expr->keyVar)) . " ;\n";	 
+	 //print ($prettyPrinter->prettyPrintExpr($this->expr->valueVar)) . " ;\n";
       }
       else if ($this->loop_type == CFGNodeLoopHeader::WHILE_LOOP) {
 
