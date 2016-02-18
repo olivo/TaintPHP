@@ -53,6 +53,12 @@ function isTainted($expr, $tainted_variables, $user_taint) {
 	     // The expression is tainted if it invokes the secret-tainting function in openclinic.
 	     return true;
 	  }
+	  else if (!$user_taint && strcmp($function_name, 'mysql_query') == 0) {
+	     
+	     // TODO: Fix this to only taint select statements.
+	     // The expression is tainted if it invokes the mysql_query predefined function.
+	     return true;
+	  }
 
 	  // The expression is tainted if one of the arguments is tainted.
 	  foreach ($expr->args as $arg) {
@@ -84,6 +90,14 @@ function isTainted($expr, $tainted_variables, $user_taint) {
        else if ($expr instanceof PhpParser\Node\Expr\ArrayDimFetch) {
 
        	  print "Analyzing array fetch expression for taint.\n";
+
+	  // The expression is user tainted if it invokes a basic predefined extraction
+	  // from the '_GET' or '_POST' arrays.
+	  if ($user_taint && (strcmp($expr->var->name, '_GET') == 0 || strcmp($expr->var->name, '_POST') == 0)) {
+
+	     return true;
+	  }
+  
 	  return isTainted($expr->var, $tainted_variables, $user_taint) || isTainted($expr->dim, $tainted_variables, $user_taint);
        }
        
@@ -114,6 +128,7 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 		      	 $lhs_var = $lhs->var->name;
 		      } else {
 
+		      	 $lhs_var = null;
 		      	 print "ERROR: Unrecognized LHS type of an assignment while performing taint analysis.\n";
 		      } 
 		     
@@ -287,7 +302,7 @@ function cfg_taint_analysis($cfg) {
 
 	 // WARNING: Imposing a bound to avoid infinite loops.
 	 $steps = 0;
-	 $bound = 1000;
+	 $bound = 10000;
 
 	 // Map that contains the set of tainted variables 
 	 // per CFG node.
