@@ -9,8 +9,8 @@ class CFGTaintMap {
 
       public function __construct($userTaintMap, $secretTaintMap) {
 
-      	     $this->setUserTaintMap($userTaintMap);
-      	     $this->setSecretTaintMap($secretTaintMap);
+      	     $this->UserTaintMap = $userTaintMap;
+      	     $this->SecretTaintMap = $secretTaintMap;
       }
 
       public function setUserTaintMap($userTaintMap) {
