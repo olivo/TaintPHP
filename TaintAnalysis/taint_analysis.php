@@ -8,6 +8,7 @@ include_once(dirname(__FILE__) . '/../CFG/StmtProcessing.php');
 include_once('TaintedVariables.php');
 include_once('CFGTaintMap.php');
 include_once('FileTaintMap.php');
+include_once('TaintSource.php');
 
 // Checks whether a conditional node is tainted.
 function isSecretTaintedCFGNodeCond($current_node, $taint_set) {
@@ -34,7 +35,17 @@ function isTainted($expr, $tainted_variables, $user_taint) {
 
        if ($expr == null) {
        
-	return false;
+	return False;
+       }
+
+       // Check if it's a pre-defined source of taint.
+       if ($user_taint && TaintSource::isUserTaintSource($expr)) {
+
+       	  return True;
+       }
+       else if (!$user_taint && TaintSource::isSecretTaintSource($expr)) {
+
+       	  return True;
        }
 
        // For now, checking that the expression is either a function call of 'postGetSession' or a variable already in the tainted set.
@@ -279,6 +290,9 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 // Performs a flow-sensitive forward taint analysis on the defined functions
 // and the main code.
 function taint_analysis($main_cfg, $function_cfgs, $function_signatures) {
+
+	 // Initialize pre-defined taint information.
+	 TaintSource::initializeTaintSources();
 
 	 // Construction the taint map for the main function.
 	 $main_taint_map = cfg_taint_analysis($main_cfg);

@@ -4,7 +4,7 @@
 
 include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 
-static class TaintSource {
+class TaintSource {
 
       // Names of functions that contain sources of user taint.
       private static $userTaintedFunctions = array();
@@ -18,40 +18,35 @@ static class TaintSource {
       // Names of functions that contain sources of secret taint.
       private static $secretTaintedArrays = array();
 
-      public function __construct() {
+      public function initializeTaintSources() {
 
-      	     $this->userTaintedFunctions = array();
-      	     $this->userTaintedArrays = array();
-	     $this->secretTaintedFunctions = array();
-	     $this->secretTaintedArrays = array();
+      	     $userTaintedFunctions = array();
+      	     $userTaintedArrays = array();
+	     $secretTaintedFunctions = array();
+	     $secretTaintedArrays = array();
 
-	     addPredefinedTaintSources();
+	     TaintSource::addPredefinedTaintSources();
       }
 
-      private void addPredefinedTaintSources() {
+      private static function addPredefinedTaintSources() {
 
-      	      $this->userTaintedArrays["_GET"] = 1;
-	      $this->userTaintedArrays["_POST"] = 1;
+      	      $userTaintedArrays["_GET"] = 1;
+	      $userTaintedArrays["_POST"] = 1;
       }
 
-      public function isUserTaintSource($expr) {
+      public static function isUserTaintSource($expr) {
 
       	     if ($expr instanceof PhpParser\Node\Expr\ArrayDimFetch) {
 
-	     	return isset($this->userTaintArrays[$this->var->name]);
+	     	return isset($userTaintedArrays[$expr->var->name]);
 	     }
 
 	     return False;
       }
 
-      public function isSecretTaintSource($expr) {
+      public static function isSecretTaintSource($expr) {
 
-      	     if ($expr instanceof PhpParser\Node\Expr\ArrayDimFetch) {
-
-	     	return $this
-	     }
-
-	     return False;
+      	     return False;
       }
 
 }
