@@ -32,6 +32,8 @@ class TaintSource {
 
       	      $userTaintedArrays["_GET"] = 1;
 	      $userTaintedArrays["_POST"] = 1;
+
+	      $secretTaintedFunctions["mysql_query"] = 1;
       }
 
       public static function isUserTaintSource($expr) {
@@ -46,6 +48,11 @@ class TaintSource {
 
       public static function isSecretTaintSource($expr) {
 
+      	     if ($expr instanceof PhpParser\Node\Expr\MethodCall) {
+	     	
+		return isset($userTaintedFunctions[$expr->name]);
+	     }
+      
       	     return False;
       }
 
