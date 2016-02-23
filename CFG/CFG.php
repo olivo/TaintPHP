@@ -547,7 +547,8 @@ function print_preorder($cfg_node, $visited) {
 	       foreach($stmts as $stmt) {
 
 	       		      if($stmt instanceof PhpParser\Node\Stmt\Function_ || $stmt instanceof PhpParser\Node\Stmt\ClassMethod) {
-			      	       $signature = new FunctionSignature($stmt->name,$stmt->params,$stmt->returnType);
+			      // TODO include file and class name to the function signature.
+			      	       $signature = new FunctionSignature(NULL, NULL, $stmt->name, $stmt->returnType);
 
 			      	       $name = $stmt->name;
 
