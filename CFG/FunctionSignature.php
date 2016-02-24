@@ -13,15 +13,11 @@
 	      // Name of the function.
 	      private $FunctionName = NULL;
 
-	      // Return type of the function.
-	      private $ReturnType = NULL;
-
-	      public function __construct($fileName, $className, $functionName, $returnType) {
+	      public function __construct($fileName, $className, $functionName) {
 	      	     
 		     $this->FileName = $fileName;
 		     $this->ClassName = $className;
 		     $this->FunctionName = $functionName;
-		     $this->ReturnType = $returnType;
 	       }
 	}
 ?>

@@ -4,19 +4,23 @@
 class CallGraphNode {
 
       // Representation of a function.
-      private $FunctionNode = NULL;
+      private $FunctionRepresentation = NULL;
 
       // Array of predecessors in the call graph.
-      private $Predecessors[] = array();
+      private $Predecessors[];
 
       // Array of successors in the call graph.
-      private $Successors[] = array();
+      private $Successors[];
 
-      public function __construct($functionNode, $predecessors, $successors) {
+      public function __construct($functionRepresentation, $predecessors = array(), $successors = array()) {
       	     
-	     $this->FunctionNode = $functionNode;
+	     $this->FunctionRepresentation = $functionRepresentation;
 	     $this->Predecessors = $predecessors;
 	     $this->Successors = $successors;
+      }
+
+      public function getFunctionRepresentation() {
+      	     return $this->FunctionRepresentation;
       }
 }
 ?>

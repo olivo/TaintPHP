@@ -61,7 +61,9 @@ class CallGraph {
 			    	     
 	         } else if($stmt instanceof PhpParser\Node\Expr\FuncCall) {
 			    	     
-	         }
+	         } else if($stmt instanceof PhpParser\Node\Stmt\Function_) {
+
+		 }
 	     }
 
 	     return $callGraph;	     
