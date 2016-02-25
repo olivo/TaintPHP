@@ -39,15 +39,16 @@ class CallGraph {
 
 	     $className = "";
 	     if(count($stmts) == 1 && $stmts[0] instanceof PhpParser\Node\Stmt\Class_) {
-	         $callGraph = CallGraph::constructStmtsCallGraph($stmts[0]->stmts, $fileName, $className->name);
+	         $callGraph = CallGraph::constructFileStmtsCallGraph($stmts[0]->stmts, $fileName, $className->name);
 	     } else {
-	         $callGraph = CallGraph::constructStmtsCallGraph($stmts, $fileName, $className);
+	         $callGraph = CallGraph::constructFileStmtsCallGraph($stmts, $fileName, $className);
 	     }
 	     
 	     return $callGraph;
       }
 
-      public function constructStmtsCallGraph($stmts, $fileName, $className) {
+      // Constructs call graph nodes and edges from the statements in a file.
+      public function constructFileStmtsCallGraph($stmts, $fileName, $className) {
       	     $callGraph = new CallGraph();
 
 	     // Add signature for main.
@@ -61,10 +62,17 @@ class CallGraph {
 			    	     
 	         } else if($stmt instanceof PhpParser\Node\Expr\FuncCall) {
 			    	     
-	         }
+	         } else if($stmt instanceof PhpParser\Node\Stmt\Function_) {
+
+		 }
 	     }
 
 	     return $callGraph;	     
+      }
+
+      // Constructs call graph nodes and edges from the statements of a function.
+      public function constructFunctionStmtsCallGraph($stmts, $fileName, $className, $functionName) {
+
       }
 
       // Add a node to the Nodes set if it doesn't exist already.
