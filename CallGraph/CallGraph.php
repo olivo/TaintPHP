@@ -49,12 +49,12 @@ class CallGraph {
 
       // Constructs call graph nodes and edges from the statements in a file.
       public function constructFileStmtsCallGraph($stmts, $fileName, $className) {
-      	     $callGraph = new CallGraph();
+      	     
+	     $callGraph = new CallGraph();
 
 	     // Add signature for main.
 	     $mainSignature = new FunctionSignature($fileName, $className, "");
-	     $mainCallGraphNode = new CallGraphNode($mainSignature);
-	     $callGraph->addNode($mainCallGraphNode);
+	     $callGraph->addNodeFromFunctionRepresentation($mainSignature);
 	     
 	     // Add node for statements.
 	     foreach($stmts as $stmt) {
@@ -62,26 +62,47 @@ class CallGraph {
 			    	     
 	         } else if($stmt instanceof PhpParser\Node\Expr\FuncCall) {
 			    	     
+	         } else if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
+			    	     
 	         } else if($stmt instanceof PhpParser\Node\Stmt\Function_) {
-
+		     $callGraph->callGraphFunctionProcessing($stmt->stmts, $filename, $className, $stmt->name);
 		 }
 	     }
 
-	     return $callGraph;	     
+	     return $callGraph;
       }
 
-      // Constructs call graph nodes and edges from the statements of a function.
-      public function constructFunctionStmtsCallGraph($stmts, $fileName, $className, $functionName) {
+      // Adds call graph nodes and edges from the statements of a function.
+      public function callGraphFunctionProcessing($stmts, $fileName, $className, $functionName) {
 
+	     // Add node for statements.
+	     foreach($stmts as $stmt) {
+	         if($stmt instanceof PhpParser\Node\Expr\MethodCall) {
+			    	     
+	         } else if($stmt instanceof PhpParser\Node\Expr\FuncCall) {
+			    	     
+	         } else if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
+			    	     
+	         }
+	     }
       }
 
-      // Add a node to the Nodes set if it doesn't exist already.
-      public function addNode($mainCallGraphNode) {
-      	     $functionRepresentation = $mainCallGraphNode->getFunctionRepresentation();
+      // Add a node derived from a function signature
+      // to the Nodes set if it doesn't exist already.
+      public function addNodeFromFunctionRepresentation($functionRepresentation) {
+
+	     $mainCallGraphNode = new CallGraphNode($functionRepresentation);
 
       	     if(!$Nodes->contains($functionRepresentation)) {
-	     	  $Nodes->attach($functionRepresentation, $mainCallGraphNode);
+	     	  $Nodes->attach($functionRepresentation, new CallGraphNode($mainCallGraphNode));
 	     }
+      }
+      
+      // Add an edge between two call graph nodes.
+      public function addEdge($source, $destination) {
+      	     
+	     $source->addSuccessor($destination);
+	     $destination->addPredecessor($source);
       }
 }
 ?>

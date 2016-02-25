@@ -22,5 +22,13 @@ class CallGraphNode {
       public function getFunctionRepresentation() {
       	     return $this->FunctionRepresentation;
       }
+
+      public function addPredecessor($callGraphNode) {
+      	     $Predecessors[] = $callGraphNode;
+      }
+
+      public function addSuccessor($callGraphNode) {
+      	     $Successors[] = $callGraphNode;
+      }
 }
 ?>
