@@ -22,6 +22,10 @@ class CallGraph {
 	     $this->Nodes = $nodes;
       }
 
+      public function getCallGraphNode($functionRepresentation) {
+      	     return $this->Nodes[$functionRepresentation];
+      }      
+
       // Computes the callgraph of a file.
       public function constructFileCallGraph($filename) {
       	     
@@ -58,12 +62,17 @@ class CallGraph {
 	     
 	     // Add node for statements.
 	     foreach($stmts as $stmt) {
-	         if($stmt instanceof PhpParser\Node\Expr\MethodCall) {
-			    	     
-	         } else if($stmt instanceof PhpParser\Node\Expr\FuncCall) {
-			    	     
-	         } else if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
-			    	     
+	         if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
+		    || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
+		 	  // TODO: change the class to the holding object.
+			  if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
+			  	   $invokedClassName = $stmt->class;
+			  } else {
+			    	   $invokedClassName = $className;
+			  }
+		 	  $signature = new FunctionSignature($fileName, $invokedClassName, $stmt->name);
+			  $this->addNodeFromFunctionRepresentation($signature);
+			  $this->addEdge($mainSignature, $this->getCallGraphNode($signature));
 	         } else if($stmt instanceof PhpParser\Node\Stmt\Function_) {
 		     $callGraph->callGraphFunctionProcessing($stmt->stmts, $filename, $className, $stmt->name);
 		 }
@@ -74,27 +83,34 @@ class CallGraph {
 
       // Adds call graph nodes and edges from the statements of a function.
       public function callGraphFunctionProcessing($stmts, $fileName, $className, $functionName) {
+      	     
+	     $currentSignature = new FunctionSignature($fileName, $className, $functionName);
 
 	     // Add node for statements.
 	     foreach($stmts as $stmt) {
-	         if($stmt instanceof PhpParser\Node\Expr\MethodCall) {
-			    	     
-	         } else if($stmt instanceof PhpParser\Node\Expr\FuncCall) {
-			    	     
-	         } else if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
-			    	     
-	         }
-	     }
+	         if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
+		    || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
+		 	  // TODO: change the class to the holding object.
+			  if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
+			  	   $invokedClassName = $stmt->class;
+			  } else {
+			    	   $invokedClassName = $className;
+			  }
+		 	  $signature = new FunctionSignature($fileName, $invokedClassName, $stmt->name);
+			  $this->addNodeFromFunctionRepresentation($signature);
+			  $this->addEdge($this->getCallGraphNode($currentSignature), $this->getCallGraphNode($signature));
+	          }
+              }
       }
 
       // Add a node derived from a function signature
       // to the Nodes set if it doesn't exist already.
       public function addNodeFromFunctionRepresentation($functionRepresentation) {
 
-	     $mainCallGraphNode = new CallGraphNode($functionRepresentation);
+	     $callGraphNode = new CallGraphNode($functionRepresentation);
 
       	     if(!$Nodes->contains($functionRepresentation)) {
-	     	  $Nodes->attach($functionRepresentation, new CallGraphNode($mainCallGraphNode));
+	     	  $Nodes->attach($functionRepresentation, new CallGraphNode($callGraphNode));
 	     }
       }
       
