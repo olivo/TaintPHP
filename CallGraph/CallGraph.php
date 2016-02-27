@@ -71,8 +71,8 @@ class CallGraph {
 			    	   $invokedClassName = $className;
 			  }
 		 	  $signature = new FunctionSignature($fileName, $invokedClassName, $stmt->name);
-			  $this->addNodeFromFunctionRepresentation($signature);
-			  $this->addEdge($mainSignature, $this->getCallGraphNode($signature));
+			  $callGraph->addNodeFromFunctionRepresentation($signature);
+			  $callGraph->addEdge($mainSignature, $callGraph->getCallGraphNode($signature));
 	         } else if($stmt instanceof PhpParser\Node\Stmt\Function_) {
 		     $callGraph->callGraphFunctionProcessing($stmt->stmts, $filename, $className, $stmt->name);
 		 }

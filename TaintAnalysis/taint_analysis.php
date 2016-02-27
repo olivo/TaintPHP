@@ -289,25 +289,29 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 
 // Performs a flow-sensitive forward taint analysis on the defined functions
 // and the main code.
-function taint_analysis($main_cfg, $function_cfgs, $function_signatures) {
-
+function taint_analysis($fileCFGInfo) {
+	 
+	 $mainCFG = $fileCFGInfo->getMainCFG();
+	 $functionCFGs = $fileCFGInfo->getFunctionCFGs();
+	 $functionSignatures = $fileCFGInfo->getFunctionSignatures();
+	 
 	 // Initialize pre-defined taint information.
 	 TaintSource::initializeTaintSources();
 
 	 // Construction the taint map for the main function.
-	 $main_taint_map = cfg_taint_analysis($main_cfg);
+	 $mainTaintMap = cfg_taint_analysis($mainCFG);
 
 
 	 // Constructing the taint maps for each internal function.	 
-	 $function_taint_maps = array();
+	 $functionTaintMaps = array();
 
-	 foreach ($function_cfgs as $function_name => $function_cfg) {
+	 foreach ($functionCFGs as $functionName => $functionCFG) {
 
-	 	 $function_taint_map = cfg_taint_analysis($function_cfg);
-		 $function_taint_maps[$function_name] = $function_taint_map;
+	 	 $functionTaintMap = cfg_taint_analysis($functionCFG);
+		 $functionTaintMaps[$functionName] = $functionTaintMap;
 	 }
 
-	 return new FileTaintMap($main_taint_map, $function_taint_maps);
+	 return new FileTaintMap($mainTaintMap, $functionTaintMaps);
 }
 
 // Performs a flow-sensitive forward taint analysis on a CFG.

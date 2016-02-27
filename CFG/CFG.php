@@ -4,6 +4,7 @@ include_once "CFGNode.php";
 include_once "CFGNodeCond.php";
 include_once "CFGNodeLoopHeader.php";
 include_once "CFGNodeStmt.php";
+include_once "FileCFGInfo.php";
 include_once "FunctionSignature.php";
 include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 include_once "StmtProcessing.php";
@@ -633,7 +634,7 @@ static function construct_file_cfgs($filename) {
 
 	fclose($file);
 		 
-	return array($main_cfg,$function_cfgs,$function_signatures);
+	return new FileCFGInfo($main_cfg, $function_cfgs, $function_signatures);
 }
 	
 
