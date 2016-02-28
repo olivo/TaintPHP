@@ -8,13 +8,15 @@ class FileCFGInfo {
       private $functionCFGs = NULL;
       private $functionRepresentations = NULL;
       private $className = "";
+      private $fileName = "";
 
-      public function __construct($mainCFG, $functionCFGs = NULL, $functionRepresentations = NULL, $className = "") {
+      public function __construct($mainCFG, $functionCFGs = NULL, $functionRepresentations = NULL, $className = "", $fileName = "") {
 
       	     $this->mainCFG = $mainCFG;
 	     $this->functionCFGs = $functionCFGs;
 	     $this->functionRepresentations = $functionRepresentations;
-	     $this->className = "";
+	     $this->className = $className;
+	     $this->fileName = $fileName;
       }
 
       public function getMainCFG() {
@@ -31,6 +33,10 @@ class FileCFGInfo {
       
       public function getClassName() {
       	     return $this->className;
+      }
+
+      public function getFileName() {
+      	     return $this->fileName;
       }
 }
 

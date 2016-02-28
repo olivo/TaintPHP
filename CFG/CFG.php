@@ -568,15 +568,15 @@ function print_preorder($cfg_node, $visited) {
 // the main function, and returns the mapping from function names
 // to CFGs, main CFG, and the mapping from function signatures
 // to CFGs.
-static function construct_file_cfgs($filename) {
+static function construct_file_cfgs($fileName) {
 
-	print "Constructing CFGs for file ".($filename)."\n";
+	print "Constructing CFGs for file ".($fileName)."\n";
 	 	
-	$file = fopen($filename,"r");
+	$file = fopen($fileName,"r");
 
 	$parser = new PhpParser\Parser(new PhpParser\Lexer);
 
-	$contents = fread($file,filesize($filename));
+	$contents = fread($file,filesize($fileName));
 
 	$stmts=array();
 
@@ -637,7 +637,7 @@ static function construct_file_cfgs($filename) {
 
 	fclose($file);
 		 
-	return new FileCFGInfo($main_cfg, $function_cfgs, $function_signatures, $className);
+	return new FileCFGInfo($main_cfg, $function_cfgs, $function_signatures, $className, $fileName);
 }
 	
 
