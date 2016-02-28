@@ -26,81 +26,76 @@ class CallGraph {
       	     return $this->Nodes[$functionRepresentation];
       }      
 
-      // Computes the callgraph from the CFG info of a file..
+      // Constructs call graph nodes and edges from the CFGs of a file.
       public function constructFileCallGraph($fileCFGInfo) {
       	     
-	     print "Constructing Call Graph for file " . $filename . "\n";
-	     $file = fopen($filename, "r");
-	     $parser = new PhpParser\Parser(new PhpParser\Lexer);
-	     $contents = fread($file, filesize($filename));
+	     $fileName = $fileCFGInfo->getFileName();
+	     $className = $fileCFGInfo->getClassName();
 
-	     try {
-	     	 $stmts = $parser->parse($contents);
-             } catch(PhpParser\Error $e) {
-	         echo "ERROR: Could not parse file during call graph construction: " . $e->getMessage();
-		 return NULL;
-	     }
-
-	     $className = "";
-	     if(count($stmts) == 1 && $stmts[0] instanceof PhpParser\Node\Stmt\Class_) {
-	         $callGraph = CallGraph::constructFileStmtsCallGraph($stmts[0]->stmts, $fileName, $className->name);
-	     } else {
-	         $callGraph = CallGraph::constructFileStmtsCallGraph($stmts, $fileName, $className);
-	     }
-	     
-	     return $callGraph;
-      }
-
-      // Constructs call graph nodes and edges from the statements in a file.
-      public function constructFileStmtsCallGraph($stmts, $fileName, $className) {
-      	     
 	     $callGraph = new CallGraph();
 
-	     // Add signature for main.
+	     // Add node for the main function.
 	     $mainSignature = new FunctionSignature($fileName, $className, "");
 	     $callGraph->addNodeFromFunctionRepresentation($mainSignature);
 	     
-	     // Add node for statements.
-	     foreach($stmts as $stmt) {
-	         if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
-		    || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
-		 	  // TODO: change the class to the holding object.
-			  if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
-			  	   $invokedClassName = $stmt->class;
-			  } else {
-			    	   $invokedClassName = $className;
-			  }
-		 	  $signature = new FunctionSignature($fileName, $invokedClassName, $stmt->name);
-			  $callGraph->addNodeFromFunctionRepresentation($signature);
-			  $callGraph->addEdge($mainSignature, $callGraph->getCallGraphNode($signature));
-	         } else if($stmt instanceof PhpParser\Node\Stmt\Function_) {
-		     $callGraph->callGraphFunctionProcessing($stmt->stmts, $filename, $className, $stmt->name);
-		 }
+	     // Process the CFG of the main function.
+	     $callGraph->callGraphCFGProcessing($fileCFGInfo->getMainCFG(), $mainSignature);
+	     
+	     foreach($fileCFGInfo->getFunctionCFGs() as $functionName => $functionCFG) {
+	     	  $functionSignature = new FunctionSignature($fileName, $className, $functionName);
+	          $callGraph->addNodeFromFunctionRepresentation($functionSignature);
+	     	  $callGraph->callGraphCFGProcessing($functionCFG, $functionSignature);
 	     }
 
 	     return $callGraph;
       }
 
-      // Adds call graph nodes and edges from the statements of a function.
-      public function callGraphFunctionProcessing($stmts, $fileName, $className, $functionName) {
-      	     
-	     $currentSignature = new FunctionSignature($fileName, $className, $functionName);
+      // Adds call graph nodes and edges from the CFG of the function.
+      public function callGraphCFGProcessing($cfg, $signature) {
 
-	     // Add node for statements.
-	     foreach($stmts as $stmt) {
-	         if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
-		    || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
+      	     $fileName = $signature->getFileName();
+	     $className = $signature->getClassName();
+	     $functionName = $signature->getFunctionName();
+
+      	     // Perform BFS on CFG.
+      	     $q = new SplQueue();
+	     $nodeSet = new SplObjectStorage();
+
+	     $q->enqueue($cfg->entry);
+
+	     while(count($q)) {
+
+	         $node = $q->dequeue();
+		 $nodeSet->attach($node);
+
+		 // TODO: check for function calls on non statement nodes.
+		 if(CFGNode::isCFGNodeStmt($node)) {
+
+		     $stmt = $node->getStmt();
+
+	             if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
+		        || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
 		 	  // TODO: change the class to the holding object.
 			  if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
 			  	   $invokedClassName = $stmt->class;
 			  } else {
 			    	   $invokedClassName = $className;
 			  }
-		 	  $signature = new FunctionSignature($fileName, $invokedClassName, $stmt->name);
-			  $this->addNodeFromFunctionRepresentation($signature);
-			  $this->addEdge($this->getCallGraphNode($currentSignature), $this->getCallGraphNode($signature));
-	          }
-              }
+		 	  $invokedSignature = new FunctionSignature($fileName, $invokedClassName, $stmt->name);
+			  $this->addNodeFromFunctionRepresentation($invokedSignature);
+			  $this->addEdge($this->getCallGraphNode($signature), $this->getCallGraphNode($invokedSignature));
+	              }
+		  }
+	
+		  // Add unexplored successors.	  
+		  foreach($cfg->getSuccessors() as $successor) {
+		      if(!$nodeSet->contains($successor)) {
+		          $nodeSet->attach($successor);
+		      } else {
+		      	  $q->enqueue($successor);
+		      }
+		  }
+             }
       }
 
       // Add a node derived from a function signature

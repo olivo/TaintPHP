@@ -18,6 +18,18 @@
 		     $this->FileName = $fileName;
 		     $this->ClassName = $className;
 		     $this->FunctionName = $functionName;
-	       }
+	      }
+	      
+	      public function getFileName() {
+	      	     return $this->FileName;
+	      }
+
+	      public function getClassName() {
+	      	     return $this->ClassName;
+	      }
+
+	      public function getFunctionName() {
+	      	     return $this->FunctionName;
+	      }
 	}
 ?>

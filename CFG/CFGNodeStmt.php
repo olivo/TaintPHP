@@ -21,6 +21,10 @@ public function __construct() {
        $this->back_edge = FALSE;
 }
 
+public function getStmt() {
+       return $this->stmt;
+}
+
 // Printout function.
 public function printCFGNode() {
 

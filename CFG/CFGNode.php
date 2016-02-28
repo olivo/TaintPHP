@@ -31,6 +31,14 @@ public function isCFGNodeLoopHeader($cfg_node) {
        return ($cfg_node instanceof CFGNodeLoopHeader);
 }
 
+public function getSuccessors() {
+       return $this->successors();
+}
+
+public function getParents() {
+       return $this->parents;
+}
+
 // Printing function for the node.
 public function printCFGNode() {
 
