@@ -16,38 +16,35 @@ class CallGraph {
       // Map from function signatures to nodes in the callgraph
       private $Nodes;
       
-      public function __construct($roots = new SplObjectStorage(), $nodes = new SplObjectStorage()) {
+      public function __construct() {
 
-      	     $this->Roots = $roots;
-	     $this->Nodes = $nodes;
+      	     $this->Roots = new SplObjectStorage();
+	     $this->Nodes = new SplObjectStorage();
       }
 
       public function getCallGraphNode($functionRepresentation) {
       	     return $this->Nodes[$functionRepresentation];
       }      
 
-      // Constructs call graph nodes and edges from the CFGs of a file.
-      public function constructFileCallGraph($fileCFGInfo) {
+      // Add call graph nodes and edges from the CFGs of a file.
+      public function addFileCallGraphInfo($fileCFGInfo) {
       	     
 	     $fileName = $fileCFGInfo->getFileName();
 	     $className = $fileCFGInfo->getClassName();
 
-	     $callGraph = new CallGraph();
-
 	     // Add node for the main function.
 	     $mainSignature = new FunctionSignature($fileName, $className, "");
-	     $callGraph->addNodeFromFunctionRepresentation($mainSignature);
+	     $this->addNodeFromFunctionRepresentation($mainSignature);
 	     
 	     // Process the CFG of the main function.
-	     $callGraph->callGraphCFGProcessing($fileCFGInfo->getMainCFG(), $mainSignature);
+	     $this->callGraphCFGProcessing($fileCFGInfo->getMainCFG(), $mainSignature);
 	     
 	     foreach($fileCFGInfo->getFunctionCFGs() as $functionName => $functionCFG) {
 	     	  $functionSignature = new FunctionSignature($fileName, $className, $functionName);
-	          $callGraph->addNodeFromFunctionRepresentation($functionSignature);
-	     	  $callGraph->callGraphCFGProcessing($functionCFG, $functionSignature);
+	          $this->addNodeFromFunctionRepresentation($functionSignature);
+	     	  $this->callGraphCFGProcessing($functionCFG, $functionSignature);
 	     }
 
-	     return $callGraph;
       }
 
       // Adds call graph nodes and edges from the CFG of the function.
@@ -78,8 +75,11 @@ class CallGraph {
 		 	  // TODO: change the class to the holding object.
 			  if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
 			  	   $invokedClassName = $stmt->class;
+			  } else if($stmt instanceof PhpParser\Node\Expr\FuncCall) {
+			           $invokedClassName = $className;
 			  } else {
-			    	   $invokedClassName = $className;
+			    	   // TODO: Need to infer class from call object.
+			    	   $invokedClassName = "";
 			  }
 		 	  $invokedSignature = new FunctionSignature($fileName, $invokedClassName, $stmt->name);
 			  $this->addNodeFromFunctionRepresentation($invokedSignature);
@@ -88,7 +88,7 @@ class CallGraph {
 		  }
 	
 		  // Add unexplored successors.	  
-		  foreach($cfg->getSuccessors() as $successor) {
+		  foreach($node->getSuccessors() as $successor) {
 		      if(!$nodeSet->contains($successor)) {
 		          $nodeSet->attach($successor);
 		      } else {
@@ -104,8 +104,8 @@ class CallGraph {
 
 	     $callGraphNode = new CallGraphNode($functionRepresentation);
 
-      	     if(!$Nodes->contains($functionRepresentation)) {
-	     	  $Nodes->attach($functionRepresentation, new CallGraphNode($callGraphNode));
+      	     if(!$this->Nodes->contains($functionRepresentation)) {
+	     	  $this->Nodes->attach($functionRepresentation, new CallGraphNode($callGraphNode));
 	     }
       }
       

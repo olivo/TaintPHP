@@ -32,7 +32,7 @@ public function isCFGNodeLoopHeader($cfg_node) {
 }
 
 public function getSuccessors() {
-       return $this->successors();
+       return $this->successors;
 }
 
 public function getParents() {

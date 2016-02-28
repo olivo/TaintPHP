@@ -7,10 +7,10 @@ class CallGraphNode {
       private $FunctionRepresentation = NULL;
 
       // Array of predecessors in the call graph.
-      private $Predecessors[];
+      private $Predecessors;
 
       // Array of successors in the call graph.
-      private $Successors[];
+      private $Successors;
 
       public function __construct($functionRepresentation, $predecessors = array(), $successors = array()) {
       	     
