@@ -26,8 +26,8 @@ class CallGraph {
       	     return $this->Nodes[$functionRepresentation];
       }      
 
-      // Computes the callgraph of a file.
-      public function constructFileCallGraph($filename) {
+      // Computes the callgraph from the CFG info of a file..
+      public function constructFileCallGraph($fileCFGInfo) {
       	     
 	     print "Constructing Call Graph for file " . $filename . "\n";
 	     $file = fopen($filename, "r");

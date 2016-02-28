@@ -594,11 +594,14 @@ static function construct_file_cfgs($filename) {
 
 	echo "Constructing the CFG map of functions.\n";
 
+	$className = "";
+
 	// If there is only one statement and it's a class definition,
 	// extract the inner class functions.
 	if (count($stmts) == 1 && ($stmts[0] instanceof PhpParser\Node\Stmt\Class_)) {
 
 	         print "Constructing CFG for class\n";
+		 $className = $stmts[0]->name;
 		 $function_definitions = CFG::process_function_definitions($stmts[0]->stmts);
 	} else {
 
@@ -634,7 +637,7 @@ static function construct_file_cfgs($filename) {
 
 	fclose($file);
 		 
-	return new FileCFGInfo($main_cfg, $function_cfgs, $function_signatures);
+	return new FileCFGInfo($main_cfg, $function_cfgs, $function_signatures, $className);
 }
 	
 
