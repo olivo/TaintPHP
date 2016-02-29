@@ -1,7 +1,7 @@
 <?php
 
 include_once "CallGraphNode.php";
-include_once "FunctionSignature.php";
+include_once(dirname(__FILE__) . '/../CFG/FunctionSignature.php');
 include_once(dirname(__FILE__) . '/../PHP-Parser-master/lib/bootstrap.php');
 
 // Class representing an application's callgraph.
@@ -60,7 +60,7 @@ class CallGraph {
 
 	     $q->enqueue($cfg->entry);
 
-	     while(count($q)) {
+	     while(!$q->isEmpty()) {
 
 	         $node = $q->dequeue();
 		 $nodeSet->attach($node);
@@ -102,10 +102,8 @@ class CallGraph {
       // to the Nodes set if it doesn't exist already.
       public function addNodeFromFunctionRepresentation($functionRepresentation) {
 
-	     $callGraphNode = new CallGraphNode($functionRepresentation);
-
       	     if(!$this->Nodes->contains($functionRepresentation)) {
-	     	  $this->Nodes->attach($functionRepresentation, new CallGraphNode($callGraphNode));
+	     	  $this->Nodes->attach($functionRepresentation, new CallGraphNode($functionRepresentation));
 	     }
       }
       
@@ -114,6 +112,15 @@ class CallGraph {
       	     
 	     $source->addSuccessor($destination);
 	     $destination->addPredecessor($source);
+      }
+
+      // Call graph printout function.
+      public function printCallGraph() {
+      	     foreach($this->Nodes as $functionSignature) {
+	         $node = $this->Nodes[$functionSignature];
+	         print("=== NODE ===\n");
+	         $node->printCallGraphNode();
+	     }
       }
 }
 ?>

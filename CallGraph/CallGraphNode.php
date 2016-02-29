@@ -30,5 +30,13 @@ class CallGraphNode {
       public function addSuccessor($callGraphNode) {
       	     $Successors[] = $callGraphNode;
       }
+
+      public function printCallGraphNode() {
+      	     print "[" . $this->getFunctionRepresentation()->getClassName() . "]\n";
+	     print "[Successors]:\n";
+	     foreach($this->Successors as $successor) {
+	     	print $successor->getFunctionRepresentation()->getClassName() . "\n";
+	     }
+      }
 }
 ?>

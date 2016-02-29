@@ -505,7 +505,7 @@ function print_preorder_cfg() {
 
 	 CFG::print_preorder($this->entry, $visited);
 }
-// OSWALDO.
+
 // TODO: Finish writing the preorder traversal.
 function print_preorder($cfg_node, $visited) {
 
