@@ -69,11 +69,14 @@ class CallGraph {
 		 if(CFGNode::isCFGNodeStmt($node)) {
 
 		     $stmt = $node->getStmt();
-		     print "The node.\n";
-		     $node->printCFGNode();
 
 	             if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
 		        || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
+
+		         //print "The node.\n";
+		         //$node->printCFGNode();
+		         //print "The class " . get_class($stmt) . "\n";
+
 		 	  // TODO: change the class to the holding object.
 			  if($stmt instanceof PhpParser\Node\Expr\StaticCall) {
 			  	   $invokedClassName = $stmt->class;

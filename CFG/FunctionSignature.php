@@ -31,5 +31,9 @@
 	      public function getFunctionName() {
 	      	     return $this->FunctionName;
 	      }
+
+	      public function printFunctionSignature() {
+	      	     print "(" . $this->getFileName() . ", " . $this->getClassName() . ", " . $this->getFunctionName() . ")";
+	      }
 	}
 ?>

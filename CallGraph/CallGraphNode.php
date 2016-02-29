@@ -32,10 +32,10 @@ class CallGraphNode {
       }
 
       public function printCallGraphNode() {
-      	     print "[" . $this->getFunctionRepresentation()->getClassName() . "]\n";
+      	     print "[" . $this->getFunctionRepresentation()->printFunctionSignature() . "]\n";
 	     print "[Successors]:\n";
 	     foreach($this->Successors as $successor) {
-	     	print $successor->getFunctionRepresentation()->getClassName() . "\n";
+	     	print $successor->getFunctionRepresentation()->printFunctionSignature() . "\n";
 	     }
       }
 }

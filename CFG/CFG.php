@@ -537,7 +537,7 @@ function print_preorder($cfg_node, $visited) {
 	// and return the mapping from function names to their CFGs
 	// , as well as the mapping from function names to function
 	// signatures.
-	static function process_function_definitions($stmts) {
+	static function process_function_definitions($stmts, $fileName, $className) {
 	       
 	       // Map from function names to CFG.
 	       $cfgMap = array();
@@ -548,8 +548,8 @@ function print_preorder($cfg_node, $visited) {
 	       foreach($stmts as $stmt) {
 
 	       		      if($stmt instanceof PhpParser\Node\Stmt\Function_ || $stmt instanceof PhpParser\Node\Stmt\ClassMethod) {
-			      // TODO include file and class name to the function signature.
-			      	       $signature = new FunctionSignature(NULL, NULL, $stmt->name, $stmt->returnType);
+
+			      	       $signature = new FunctionSignature($fileName, $className, $stmt->name);
 
 			      	       $name = $stmt->name;
 
@@ -560,7 +560,7 @@ function print_preorder($cfg_node, $visited) {
 		}
 
 
-	       return array($cfgMap,$signatureMap);
+	       return array($cfgMap, $signatureMap);
 	       	       
 	 }
 
@@ -602,10 +602,10 @@ static function construct_file_cfgs($fileName) {
 
 	         print "Constructing CFG for class\n";
 		 $className = $stmts[0]->name;
-		 $function_definitions = CFG::process_function_definitions($stmts[0]->stmts);
+		 $function_definitions = CFG::process_function_definitions($stmts[0]->stmts, $fileName, $className);
 	} else {
 
-		 $function_definitions = CFG::process_function_definitions($stmts);
+		 $function_definitions = CFG::process_function_definitions($stmts, $fileName, $className);
 	}
 
 
