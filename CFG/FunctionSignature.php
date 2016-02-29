@@ -32,6 +32,10 @@
 	      	     return $this->FunctionName;
 	      }
 
+	      public function toString() {
+	      	     return $this->FileName . "," . $this->ClassName . "," . $this->FunctionName;
+	      }
+
 	      public function printFunctionSignature() {
 	      	     print "(" . $this->getFileName() . ", " . $this->getClassName() . ", " . $this->getFunctionName() . ")";
 	      }

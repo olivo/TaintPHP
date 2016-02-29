@@ -551,17 +551,13 @@ function print_preorder($cfg_node, $visited) {
 
 			      	       $signature = new FunctionSignature($fileName, $className, $stmt->name);
 
-			      	       $name = $stmt->name;
-
 			      	       $cfg = CFG::construct_cfg($stmt->stmts);
 			      	       $cfgMap[(string)$stmt->name] = $cfg;
 			      	       $signatureMap[(string)$stmt->name] = $signature;
 	       		      }
 		}
 
-
 	       return array($cfgMap, $signatureMap);
-	       	       
 	 }
 
 // Opens a file, constructs the CFGs of the inner functions and 
