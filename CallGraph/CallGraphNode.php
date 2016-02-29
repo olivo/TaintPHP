@@ -24,15 +24,16 @@ class CallGraphNode {
       }
 
       public function addPredecessor($callGraphNode) {
-      	     $Predecessors[] = $callGraphNode;
+      	     $this->Predecessors[] = $callGraphNode;
       }
 
       public function addSuccessor($callGraphNode) {
-      	     $Successors[] = $callGraphNode;
+      	     $this->Successors[] = $callGraphNode;
       }
 
       public function printCallGraphNode() {
       	     print "[" . $this->getFunctionRepresentation()->printFunctionSignature() . "]\n";
+	     print "[Num. Successors]: " . count($this->Successors)  . "\n";
 	     print "[Successors]:\n";
 	     foreach($this->Successors as $successor) {
 	     	print $successor->getFunctionRepresentation()->printFunctionSignature() . "\n";
