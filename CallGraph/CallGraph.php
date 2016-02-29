@@ -69,6 +69,8 @@ class CallGraph {
 		 if(CFGNode::isCFGNodeStmt($node)) {
 
 		     $stmt = $node->getStmt();
+		     print "The node.\n";
+		     $node->printCFGNode();
 
 	             if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
 		        || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
@@ -91,9 +93,8 @@ class CallGraph {
 		  foreach($node->getSuccessors() as $successor) {
 		      if(!$nodeSet->contains($successor)) {
 		          $nodeSet->attach($successor);
-		      } else {
 		      	  $q->enqueue($successor);
-		      }
+		      } 
 		  }
              }
       }
