@@ -66,16 +66,31 @@ class CallGraph {
 	         $node = $q->dequeue();
 		 $nodeSet->attach($node);
 
-		 // TODO: check for function calls on non statement nodes.
-		 if(CFGNode::isCFGNodeStmt($node)) {
+		 $this->processCFGNode($node, $callGraphNode, $functionSignatures);
 
-		     $stmt = $node->getStmt();
+		  // Add unexplored successors.	  
+		  foreach($node->getSuccessors() as $successor) {
+		      if(!$nodeSet->contains($successor)) {
+		          $nodeSet->attach($successor);
+		      	  $q->enqueue($successor);
+		      } 
+		  }
+             }
+      }
+
+      // Processes a CFG node, and potentially adds nodes and edges to the callgraph.
+      public function processCFGNode($cfgNode, $callGraphNode, $functionSignatures) {
+
+		 // TODO: check for function calls on non statement nodes.
+		 if(CFGNode::isCFGNodeStmt($cfgNode)) {
+
+		     $stmt = $cfgNode->getStmt();
 
 	             if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
 		        || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
 
 		         print "The node.\n";
-		         $node->printCFGNode();
+		         $cfgNode->printCFGNode();
 		         print "The class " . get_class($stmt) . "\n";
 			 $invokedFunctionName = $stmt->name;
 			 $fileName = "";
@@ -119,16 +134,8 @@ class CallGraph {
 			 }
 	              }
 		  }
-	
-		  // Add unexplored successors.	  
-		  foreach($node->getSuccessors() as $successor) {
-		      if(!$nodeSet->contains($successor)) {
-		          $nodeSet->attach($successor);
-		      	  $q->enqueue($successor);
-		      } 
-		  }
-             }
       }
+
 
       // Add all the nodes from a map of function signatures.
       public function addAllNodesFromFunctionSignatures($functionSignatures) {
