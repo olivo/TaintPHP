@@ -81,18 +81,42 @@ class CallGraph {
       // Processes a CFG node, and potentially adds nodes and edges to the callgraph.
       public function processCFGNode($cfgNode, $callGraphNode, $functionSignatures) {
 
+		 print "The node.\n";
+		 $cfgNode->printCFGNode();
+		 print "The class " . get_class($cfgNode) . "\n";
+
 		 // TODO: check for function calls on non statement nodes.
-		 if(CFGNode::isCFGNodeStmt($cfgNode)) {
+		 if(CFGNode::isCFGNodeStmt($cfgNode) && $cfgNode->stmt) {
 
 		     $stmt = $cfgNode->getStmt();
 
-	             if($stmt instanceof PhpParser\Node\Expr\MethodCall || $stmt instanceof PhpParser\Node\Expr\FuncCall 
-		        || $stmt instanceof PhpParser\Node\Expr\StaticCall) {
+		     if($stmt instanceof PhpParser\Node\Expt\Assign || $stmt instanceof PhpParser\Node\Expr\AssignOp) {
+		         $this->processCFGNodeExpr($stmt->expr, $callGraphNode, $functionSignatures);
+		     } else {
+		       	 $this->processCFGNodeExpr($stmt, $callGraphNode, $functionSignatures);
+		     }
+		 } else if(CFGNode::isCFGNodeCond($cfgNode) && $cfgNode->expr) {
 
-		         print "The node.\n";
-		         $cfgNode->printCFGNode();
-		         print "The class " . get_class($stmt) . "\n";
-			 $invokedFunctionName = $stmt->name;
+		     $expr = $cfgNode->expr;
+		     if($expr instanceof PhpParser\Node\Expt\Assign || $expr instanceof PhpParser\Node\Expr\AssignOp) {
+		         $this->processCFGNodeExpr($expr, $callGraphNode, $functionSignatures);
+		     } else {
+		       	 $this->processCFGNodeExpr($expr, $callGraphNode, $functionSignatures);
+		     }
+		 } else if(CFGNode::isCFGNodeLoopHeader($cfgNode)) {
+		     // TODO: Process Foreach and For loops.
+		     if($cfgNode->isWhileLoop()) {
+		         $this->processCFGNodeExpr($this->expr->cond, $callGraphNode, $functionSignatures);
+		     }
+		 }
+       }
+
+       public function processCFGNodeExpr($expr, $callGraphNode, $functionSignatures) {
+
+	             if($expr instanceof PhpParser\Node\Expr\MethodCall || $expr instanceof PhpParser\Node\Expr\FuncCall 
+		        || $expr instanceof PhpParser\Node\Expr\StaticCall) {
+
+			 $invokedFunctionName = $expr->name;
 			 $fileName = "";
 			 $invokedClassName = "";
 
@@ -132,10 +156,8 @@ class CallGraph {
 
 			     $this->addEdge($callGraphNode, $genericNode);
 			 }
-	              }
-		  }
+	             }
       }
-
 
       // Add all the nodes from a map of function signatures.
       public function addAllNodesFromFunctionSignatures($functionSignatures) {
