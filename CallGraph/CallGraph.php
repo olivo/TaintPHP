@@ -106,7 +106,7 @@ class CallGraph {
 		 } else if(CFGNode::isCFGNodeLoopHeader($cfgNode)) {
 		     // TODO: Process Foreach and For loops.
 		     if($cfgNode->isWhileLoop()) {
-		         $this->processCFGNodeExpr($this->expr->cond, $callGraphNode, $functionSignatures);
+		         $this->processCFGNodeExpr($cfgNode->expr->cond, $callGraphNode, $functionSignatures);
 		     }
 		 }
        }
@@ -146,7 +146,7 @@ class CallGraph {
 			 } else {
 			     // Check to see if the generic node has been added previously.
 
-			     if(isset($this->Nodes[$invokedSignature->toString()])) {
+			     if($this->containsSignature($invokedSignature)) {
 			     	 print "Found signature of generic node.\n";
 			         $genericNode = $this->getCallGraphNode($invokedSignature);
 		             } else {
@@ -190,6 +190,11 @@ class CallGraph {
       	     
 	     $source->addSuccessor($destination);
 	     $destination->addPredecessor($source);
+      }
+
+      // Checks if there is a call graph node associated to a function signature.
+      public function containsSignature($signature) {
+          return isset($this->Nodes[$signature->toString()]);
       }
 
       // Call graph printout function.
