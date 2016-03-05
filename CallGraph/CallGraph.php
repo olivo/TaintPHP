@@ -85,7 +85,6 @@ class CallGraph {
 		 $cfgNode->printCFGNode();
 		 print "The class " . get_class($cfgNode) . "\n";
 
-		 // TODO: check for function calls on non statement nodes.
 		 if(CFGNode::isCFGNodeStmt($cfgNode) && $cfgNode->stmt) {
 
 		     $stmt = $cfgNode->getStmt();
@@ -111,6 +110,7 @@ class CallGraph {
 		 }
        }
 
+      // Processes the expression from a CFG node, and potentially adds nodes and edges to the callgraph.
        public function processCFGNodeExpr($expr, $callGraphNode, $functionSignatures) {
 
 	             if($expr instanceof PhpParser\Node\Expr\MethodCall || $expr instanceof PhpParser\Node\Expr\FuncCall 
@@ -156,6 +156,11 @@ class CallGraph {
 
 			     $this->addEdge($callGraphNode, $genericNode);
 			 }
+
+			 // Process the arguments of function/method calls.
+			 foreach($expr->args as $arg) {
+			     $this->processCFGNodeExpr($arg->value, $callGraphNode, $functionSignatures);
+			 }
 	             }
       }
 
@@ -197,12 +202,32 @@ class CallGraph {
           return isset($this->Nodes[$signature->toString()]);
       }
 
+      // WARNING: Only call this method after the call graph has been fully computed
+      // Computes the set of roots of the call graph, i.e. nodes without an incoming edge.
+      public function computeRootNodes() {
+
+            foreach($this->Nodes as $signature => $node) {
+	        if($node->isRoot()) {
+		    $Roots[] = $node;
+		}
+	    }
+      }
+
       // Call graph printout function.
       public function printCallGraph() {
       	     foreach($this->Nodes as $functionSignature => $node) {
 	         print("=== NODE ===\n");
 	         $node->printCallGraphNode();
 	     }
+      }
+
+      // Root node printout.
+      public function printCallGraphRoots() {
+      	     print "=== ROOTS ===\n";
+      	     foreach($this->Roots as $node) {
+	         $node->printCallGraphNode();
+	     }
+	     print "=== ===\n";
       }
 }
 ?>
