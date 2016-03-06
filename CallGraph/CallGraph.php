@@ -208,7 +208,7 @@ class CallGraph {
 
             foreach($this->Nodes as $signature => $node) {
 	        if($node->isRoot()) {
-		    $Roots[] = $node;
+		    $this->Roots[] = $node;
 		}
 	    }
       }

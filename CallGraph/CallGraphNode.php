@@ -42,6 +42,11 @@ class CallGraphNode {
 	     foreach($this->Successors as $successor) {
 	     	print $successor->getFunctionRepresentation()->printFunctionSignature() . "\n";
 	     }
+	     print "[Num. Predecessors]: " . count($this->Predecessors)  . "\n";
+	     print "[Predecessors]:\n";
+	     foreach($this->Predecessors as $predecessor) {
+	     	print $predecessor->getFunctionRepresentation()->printFunctionSignature() . "\n";
+	     }
       }
 }
 ?>
