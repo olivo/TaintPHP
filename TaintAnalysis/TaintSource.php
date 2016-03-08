@@ -10,51 +10,65 @@ class TaintSource {
       private static $userTaintedFunctions = array();
 
       // Names of arrays that contain sources of user taint.
-      private static $userTaintedArrays = array();
+      private static $UserTaintedArrays = array();
 
       // Names of functions that contain sources of secret taint.
-      private static $secretTaintedFunctions = array();
+      private static $SecretTaintedFunctions = array();
 
       // Names of functions that contain sources of secret taint.
-      private static $secretTaintedArrays = array();
+      private static $SecretTaintedArrays = array();
 
       public function initializeTaintSources() {
 
-      	     $userTaintedFunctions = array();
-      	     $userTaintedArrays = array();
-	     $secretTaintedFunctions = array();
-	     $secretTaintedArrays = array();
+      	     $UserTaintedFunctions = array();
+      	     $UserTaintedArrays = array();
+	     $SecretTaintedFunctions = array();
+	     $SecretTaintedArrays = array();
 
 	     TaintSource::addPredefinedTaintSources();
       }
 
       private static function addPredefinedTaintSources() {
 
-      	      $userTaintedArrays["_GET"] = 1;
-	      $userTaintedArrays["_POST"] = 1;
+      	      $UserTaintedArrays["_GET"] = 1;
+	      $UserTaintedArrays["_POST"] = 1;
 
-	      $secretTaintedFunctions["mysql_query"] = 1;
+	      $SecretTaintedFunctions["mysql_query"] = 1;
       }
 
+      // Function that returns true if the expression is user-tainted.
       public static function isUserTaintSource($expr) {
 
       	     if ($expr instanceof PhpParser\Node\Expr\ArrayDimFetch) {
 
-	     	return isset($userTaintedArrays[$expr->var->name]);
+	     	if(isset($UserTaintedArrays[$expr->var->name])) {
+		    return True;
+		}
 	     }
 
 	     return False;
       }
 
+      // Function that returns true if the expression is secret-tainted.
       public static function isSecretTaintSource($expr) {
 
-      	     if ($expr instanceof PhpParser\Node\Expr\MethodCall) {
+      	     if ($expr instanceof PhpParser\Node\Expr\MethodCall || $expr instanceof PhpParser\Node\Expr\FuncCall 
+	         || $expr instanceof PhpParser\Node\Expr\StaticCall) {
 	     	
-		return isset($userTaintedFunctions[$expr->name]);
+		// Check if it's an invocation of a tainting function.
+		if(isset($SecretTaintedFunctions[$expr->name])) {
+		    return True;
+		}
+
+		// Check if any arguments is tainted.
+		foreach($expr->args as $arg) {
+		    if(TaintSource::isSecretTaintSource($arg)) {
+		        return True;
+		    }
+		}
 	     }
       
       	     return False;
       }
-
 }
 ?>
