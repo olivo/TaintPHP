@@ -38,6 +38,15 @@ class FileCFGInfo {
       public function getFileName() {
       	     return $this->fileName;
       }
+
+      public function getCFG($functionSignature) {
+
+      	     if($functionSignature->isMain()) {
+	         return $this->mainCFG;
+	     } else {
+	         return $this->functionCFGs[$functionSignature->getFunctionName()];
+	     }
+      }
 }
 
 ?>

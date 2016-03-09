@@ -32,6 +32,10 @@
 	      	     return $this->FunctionName;
 	      }
 
+	      public function isMain() {
+	      	     return strcmp($this->FunctionName, "") == 0;
+	      }
+
 	      public function toString() {
 	      	     return $this->FileName . "," . $this->ClassName . "," . $this->FunctionName;
 	      }

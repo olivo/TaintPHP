@@ -22,9 +22,13 @@ class CallGraph {
 	     $this->Nodes = array();
       }
 
-      public function getCallGraphNode($functionRepresentation) {
+      public function getNode($functionRepresentation) {
       	     return $this->Nodes[$functionRepresentation->toString()];
       }      
+
+      public function getRoots() {
+      	     return $this->Roots;
+      }
 
       // Add call graph nodes and edges from the CFGs of a file.
       public function addFileCallGraphInfo($fileCFGInfo, $functionSignatures) {
@@ -140,7 +144,7 @@ class CallGraph {
 
 			 if(isset($functionSignatures[(string)$invokedFunctionName])) {
 			     foreach($functionSignatures[(string)$invokedFunctionName] as $name => $signature) {
-			         $this->addEdge($callGraphNode, $this->getCallGraphNode($signature));
+			         $this->addEdge($callGraphNode, $this->getNode($signature));
 			     }
 
 			 } else {
@@ -148,7 +152,7 @@ class CallGraph {
 
 			     if($this->containsSignature($invokedSignature)) {
 			     	 print "Found signature of generic node.\n";
-			         $genericNode = $this->getCallGraphNode($invokedSignature);
+			         $genericNode = $this->getNode($invokedSignature);
 		             } else {
 			         $genericNode = new CallGraphNode($invokedSignature);
 			         $this->addNode($genericNode);

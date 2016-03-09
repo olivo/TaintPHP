@@ -1,5 +1,7 @@
 <?php
 
+include_once(dirname(__FILE__) . '/../CallGraph/CallGraph.php');
+include_once(dirname(__FILE__) . '/../CallGraph/CallGraphNode.php');
 include_once(dirname(__FILE__) . '/../CFG/CFGNode.php');
 include_once(dirname(__FILE__) . '/../CFG/CFGNodeCond.php');
 include_once(dirname(__FILE__) . '/../CFG/CFGNodeStmt.php');
@@ -286,6 +288,20 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 		     }
 	      }
 }
+
+// Performs a taint analysis across the entire program.
+function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
+
+	 // Perform taint analysis on the CFGs of the call graph roots.
+	 foreach($callGraph->getRoots() as $callGraphNode) {
+	     $signature = $callGraphNode->getFunctionRepresentation();
+	     $fileName = $signature->getFileName();
+	     $fileCFGInfo = $cfgInfoMap[$fileName];
+	     $cfg = $fileCFGInfo->getCFG($signature);
+	     cfgTaintAnalysis($cfg);
+	 }
+}
+
 
 // Performs a flow-sensitive forward taint analysis on the defined functions
 // and the main code.
