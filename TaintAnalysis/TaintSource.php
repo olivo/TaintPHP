@@ -20,20 +20,20 @@ class TaintSource {
 
       public function initializeTaintSources() {
 
-      	     $UserTaintedFunctions = array();
-      	     $UserTaintedArrays = array();
-	     $SecretTaintedFunctions = array();
-	     $SecretTaintedArrays = array();
+      	     TaintSource::$UserTaintedFunctions = array();
+      	     TaintSource::$UserTaintedArrays = array();
+	     TaintSource::$SecretTaintedFunctions = array();
+	     TaintSource::$SecretTaintedArrays = array();
 
 	     TaintSource::addPredefinedTaintSources();
       }
 
       private static function addPredefinedTaintSources() {
 
-      	      $UserTaintedArrays["_GET"] = 1;
-	      $UserTaintedArrays["_POST"] = 1;
+      	      TaintSource::$UserTaintedArrays["_GET"] = 1;
+	      TaintSource::$UserTaintedArrays["_POST"] = 1;
 
-	      $SecretTaintedFunctions["mysql_query"] = 1;
+	      TaintSource::$SecretTaintedFunctions["mysql_query"] = 1;
       }
 
       // Function that returns true if the expression is user-tainted.
@@ -41,7 +41,7 @@ class TaintSource {
 
       	     if ($expr instanceof PhpParser\Node\Expr\ArrayDimFetch) {
 
-	     	if(isset($UserTaintedArrays[$expr->var->name])) {
+	     	if(isset(TaintSource::$UserTaintedArrays[$expr->var->name])) {
 		    return True;
 		}
 	     }
@@ -56,7 +56,7 @@ class TaintSource {
 	         || $expr instanceof PhpParser\Node\Expr\StaticCall) {
 	     	
 		// Check if it's an invocation of a tainting function.
-		if(isset($SecretTaintedFunctions[$expr->name])) {
+		if(isset(TaintSource::$SecretTaintedFunctions[$expr->name])) {
 		    return True;
 		}
 
