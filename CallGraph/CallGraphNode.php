@@ -27,6 +27,10 @@ class CallGraphNode {
       	     $this->Predecessors[] = $callGraphNode;
       }
 
+      public function getPredecessors() {
+      	     return $this->Predecessors;
+      }
+
       public function isRoot() {
              return count($this->Predecessors) == 0;
       }
@@ -37,6 +41,10 @@ class CallGraphNode {
 
       public function addSuccessor($callGraphNode) {
       	     $this->Successors[] = $callGraphNode;
+      }
+
+      public function getSucessors() {
+      	     return $this->Successors;
       }
 
       public function printCallGraphNode() {

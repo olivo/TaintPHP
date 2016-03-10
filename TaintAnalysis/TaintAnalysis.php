@@ -292,13 +292,43 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 // Performs a taint analysis across the entire program.
 function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 
-	 // Perform taint analysis on the CFGs of the call graph roots.
-	 foreach($callGraph->getRoots() as $callGraphNode) {
+	 // Create a queue of call graph nodes of the functions to analyze.
+	 $callGraphNodeQueue = new SplQueue();
+
+	 // Create a set of call graph nodes currently in the queue,
+	 // to prevent nodes from being added multiple times.
+	 $callGraphNodeSet = new SplObjectStorage();
+
+	 // Initially, add all the call graph leaves.
+	 foreach($callGraph->getLeaves() as $callGraphNode) {
+	     $callGraphNodeQueue->enqueue($callGraphNode);
+	     $callGraphNodeSet->attach($callGraphNode);
+	 }
+
+	 // Process the nodes while the queue is not empty.
+	 while(!$callGraphNodeQueue->isEmpty()) {
+
+	     $callGraphNode = $callGraphNodeQueue->dequeue();
+	     //$callGraphNodeSet->detach($callGraphNode);
+
 	     $signature = $callGraphNode->getFunctionRepresentation();
 	     $fileName = $signature->getFileName();
-	     $fileCFGInfo = $cfgInfoMap[$fileName];
-	     $cfg = $fileCFGInfo->getCFG($signature);
-	     cfgTaintAnalysis($cfg);
+
+	     // Process the CFG of a function if it's user defined.
+	     if($fileName && isset($cfgInfoMap[$fileName])) {
+	         $fileCFGInfo = $cfgInfoMap[$fileName];
+	         $cfg = $fileCFGInfo->getCFG($signature);
+	         cfgTaintAnalysis($cfg);
+	     }
+
+	     // Add the predecessors in the call graph, if they're not already
+	     // present in the queue.
+	     foreach($callGraphNode->getPredecessors() as $predecessor) {
+	            if(!$callGraphNodeSet->contains($predecessor)) {
+		        $callGraphNodeSet->attach($predecessor);
+			$callGraphNodeQueue->enqueue($predecessor);	        
+		    }
+	     }
 	 }
 }
 

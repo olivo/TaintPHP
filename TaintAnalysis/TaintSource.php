@@ -41,7 +41,7 @@ class TaintSource {
 
       	     if ($expr instanceof PhpParser\Node\Expr\ArrayDimFetch) {
 
-	     	if(isset(TaintSource::$UserTaintedArrays[$expr->var->name])) {
+	     	if(isset(TaintSource::$UserTaintedArrays[(string)$expr->var->name])) {
 		    return True;
 		}
 	     }
@@ -56,7 +56,7 @@ class TaintSource {
 	         || $expr instanceof PhpParser\Node\Expr\StaticCall) {
 	     	
 		// Check if it's an invocation of a tainting function.
-		if(isset(TaintSource::$SecretTaintedFunctions[$expr->name])) {
+		if(isset(TaintSource::$SecretTaintedFunctions[(string)$expr->name])) {
 		    return True;
 		}
 
