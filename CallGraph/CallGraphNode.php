@@ -31,6 +31,10 @@ class CallGraphNode {
              return count($this->Predecessors) == 0;
       }
 
+      public function isLeaf() {
+             return count($this->Successors) == 0;
+      }
+
       public function addSuccessor($callGraphNode) {
       	     $this->Successors[] = $callGraphNode;
       }

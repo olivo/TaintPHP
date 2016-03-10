@@ -13,12 +13,16 @@ class CallGraph {
       // Roots of the callgraph
       private $Roots;
 
+      // Leaves of the callgraph
+      private $Leaves;
+
       // Map from function signatures to nodes in the callgraph
       private $Nodes;
       
       public function __construct() {
 
       	     $this->Roots = array();
+	     $this->Leaves = array();
 	     $this->Nodes = array();
       }
 
@@ -28,6 +32,10 @@ class CallGraph {
 
       public function getRoots() {
       	     return $this->Roots;
+      }
+
+      public function getLeaves() {
+      	     return $this->Leaves;
       }
 
       // Add call graph nodes and edges from the CFGs of a file.
@@ -217,6 +225,17 @@ class CallGraph {
 	    }
       }
 
+      // WARNING: Only call this method after the call graph has been fully computed
+      // Computes the set of leaves of the call graph, i.e. nodes without an incoming edge.
+      public function computeLeafNodes() {
+
+            foreach($this->Nodes as $signature => $node) {
+	        if($node->isLeaf()) {
+		    $this->Leaves[] = $node;
+		}
+	    }
+      }
+
       // Call graph printout function.
       public function printCallGraph() {
       	     foreach($this->Nodes as $functionSignature => $node) {
@@ -229,6 +248,15 @@ class CallGraph {
       public function printCallGraphRoots() {
       	     print "=== ROOTS ===\n";
       	     foreach($this->Roots as $node) {
+	         $node->printCallGraphNode();
+	     }
+	     print "=== ===\n";
+      }
+
+      // Leaf node printout.
+      public function printCallGraphLeaves() {
+      	     print "=== LEAVES ===\n";
+      	     foreach($this->Leaves as $node) {
 	         $node->printCallGraphNode();
 	     }
 	     print "=== ===\n";
