@@ -292,6 +292,9 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 // Performs a taint analysis across the entire program.
 function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 
+	 // Global map of taint analysis results.
+	 $taintMap = array();
+
 	 // Create a queue of call graph nodes of the functions to analyze.
 	 $callGraphNodeQueue = new SplQueue();
 
@@ -318,7 +321,9 @@ function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 	     if($fileName && isset($cfgInfoMap[$fileName])) {
 	         $fileCFGInfo = $cfgInfoMap[$fileName];
 	         $cfg = $fileCFGInfo->getCFG($signature);
-	         cfgTaintAnalysis($cfg);
+	         $cfgTaintMap = cfgTaintAnalysis($cfg);
+		 $taintMap[$signature->toString()] = $cfgTaintMap;
+
 	     }
 
 	     // Add the predecessors in the call graph, if they're not already
@@ -330,6 +335,8 @@ function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 		    }
 	     }
 	 }
+
+	 return $taintMap;
 }
 
 
