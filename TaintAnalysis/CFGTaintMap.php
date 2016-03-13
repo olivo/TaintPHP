@@ -6,13 +6,15 @@ class CFGTaintMap {
 
       private $UserTaintMap = null;
       private $SecretTaintMap = null;
-      private $ReturnsTaint = False;
+      private $ReturnsSecretTaint = False;
+      private $ReturnsUserTaint = False;
 
       public function __construct($userTaintMap, $secretTaintMap) {
 
       	     $this->UserTaintMap = $userTaintMap;
       	     $this->SecretTaintMap = $secretTaintMap;
-	     $this->ReturnsTaint = False;
+	     $this->ReturnsSecretTaint = False;
+	     $this->ReturnsUserTaint = False;
       }
 
       public function setUserTaintMap($userTaintMap) {
@@ -35,12 +37,20 @@ class CFGTaintMap {
       	     return $this->SecretTaintMap;
       }
 
-      public function getReturnsTaint() {
-      	     return $this->ReturnsTaint;
+      public function getReturnsSecretTaint() {
+      	     return $this->ReturnsSecretTaint;
       }
 
-      public function setReturnsTaint($returnsTaint) {
-      	     $this->ReturnsTaint = $returnsTaint;
+      public function setReturnsSecretTaint($returnsSecretTaint) {
+      	     $this->ReturnsSecretTaint = $returnsSecretTaint;
+      }
+
+      public function getReturnsUserTaint() {
+      	     return $this->ReturnsUserTaint;
+      }
+
+      public function setReturnsUserTaint($returnsUserTaint) {
+      	     $this->ReturnsUserTaint = $returnsUserTaint;
       }
 }
 ?>
