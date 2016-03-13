@@ -119,7 +119,7 @@ function isTainted($expr, $tainted_variables, $user_taint) {
 }
 
 // Processes taint for a CFG node.
-function processTaint($current_node, $user_tainted_variables_map, $secret_tainted_variables_map) {
+function processTaint($current_node, $user_tainted_variables_map, $secret_tainted_variables_map, $cfg_taint_map) {
 
 	       // Check if the current node is a statement node with a 
 	       // non-null statement.
@@ -175,6 +175,23 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 
 		     	  $secret_tainted_variables_map[$current_node]->attach($stmt->var->name);
 		     	  print "The variable " . ($stmt->var->name) . " became secret-tainted.\n";
+		      }
+		  }
+		  // or a return statement.
+		  else if($stmt instanceof PhpParser\Node\Stmt\Return_) {
+
+		      // If the expression of the return statement is tainted, we label the CFG
+		      // as producing a taint return value.
+		      if (isTainted($stmt->expr, $user_tainted_variables_map[$current_node], True)) {
+
+		     	 print "The return statement is user-tainted.\n";
+			 $cfgTaintMap->setReturnsUserTaint(True);
+		      }
+
+		      if (isTainted($stmt->expr, $secret_tainted_variables_map[$current_node], False)) {
+
+		     	 print "The return statement is secret-tainted.\n";
+			 $cfgTaintMap->setReturnsSecretTaint(True);
 		      }
 		  }
 	       }
@@ -381,6 +398,8 @@ function cfgTaintAnalysis($cfg) {
 	 $user_tainted_variables_map = new SplObjectStorage();
 	 $secret_tainted_variables_map = new SplObjectStorage();
 
+	 $cfg_taint_map = new CFGTaintMap($user_tainted_variables_map, $secret_tainted_variables_map);
+
 	 // Forward flow-sensitive taint-analysis.
 	 $entry_node = $cfg->entry;
 	 $q = new SplQueue();
@@ -423,7 +442,7 @@ function cfgTaintAnalysis($cfg) {
 	       }
 
 	       // Process taint for the current node.
-	       processTaint($current_node, $user_tainted_variables_map, $secret_tainted_variables_map);
+	       processTaint($current_node, $user_tainted_variables_map, $secret_tainted_variables_map, $cfg_taint_map);
 
 	       $changed = $initial_user_tainted_size != $user_tainted_variables_map[$current_node]->count() 
 	       		  || $initial_secret_tainted_size != $secret_tainted_variables_map[$current_node]->count() ;
@@ -459,8 +478,6 @@ function cfgTaintAnalysis($cfg) {
 	$secret_tainted_variables_map[$cfg->exit]->printTaintedVariables();
 	print "\n";
 	print "==============================\n";
-
-	$cfg_taint_map = new CFGTaintMap($user_tainted_variables_map, $secret_tainted_variables_map);
 	
 	return $cfg_taint_map;
 }
