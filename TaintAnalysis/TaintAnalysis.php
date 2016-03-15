@@ -160,23 +160,6 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 		     	 print "The variable " . ($lhs_var) . " became secret-tainted.\n";
 		      }
 		  }
-		  // or a method call with a tainting method.
-		  else if ($stmt instanceof PhpParser\Node\Expr\MethodCall) {
-
-		      if (!$user_tainted_variables_map[$current_node]->contains($stmt->var->name)
-		          && isTainted($stmt, $user_tainted_variables_map[$current_node], True)) {
-
-		     	  $user_tainted_variables_map[$current_node]->attach($stmt->var->name);
-		     	  print "The variable " . ($stmt->var->name) . " became user-tainted.\n";
-		      }
-
-		      if (!$secret_tainted_variables_map[$current_node]->contains($stmt->var->name)
-		          && isTainted($stmt, $secret_tainted_variables_map[$current_node], False)) {
-
-		     	  $secret_tainted_variables_map[$current_node]->attach($stmt->var->name);
-		     	  print "The variable " . ($stmt->var->name) . " became secret-tainted.\n";
-		      }
-		  }
 		  // or a return statement.
 		  else if($stmt instanceof PhpParser\Node\Stmt\Return_) {
 
