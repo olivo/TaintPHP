@@ -1,0 +1,20 @@
+<?php
+// Represents a map from function names to potential function signature targets.
+class FunctionSignatureMap {
+
+      private $map = array();
+
+      public function __construct() {
+      	     $map = array();
+      }
+
+      public function get($functionName) {
+      	     return $map[(string)$functionName];
+      }
+      
+      
+	 
+
+
+}
+?>
