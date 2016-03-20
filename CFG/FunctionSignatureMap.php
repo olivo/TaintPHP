@@ -28,5 +28,15 @@ class FunctionSignatureMap {
 	         $this->add($signature);
 	     }
       }
+
+
+      public function printFunctionSignatureMap() {
+      	     foreach($this->map as $functionName => $functionSignatures) {
+	         print "[" . $functionName . "]" . "\n";
+		 foreach($functionSignatures as $functionSignature) {
+		     $functionSignature->printFunctionSignature();			     
+		 }
+	     }
+      }
 }
 ?>

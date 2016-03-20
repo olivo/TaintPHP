@@ -41,7 +41,7 @@
 	      }
 
 	      public function printFunctionSignature() {
-	      	     print "(" . $this->getFileName() . ", " . $this->getClassName() . ", " . $this->getFunctionName() . ")";
+	      	     print "(" . $this->getFileName() . ", " . $this->getClassName() . ", " . $this->getFunctionName() . ")" . "\n";
 	      }
 	}
 ?>
