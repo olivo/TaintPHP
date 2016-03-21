@@ -11,6 +11,10 @@ class FunctionSignatureMap {
       public function get($functionName) {
       	     return $this->map[(string)$functionName];
       }
+
+      public function getFunctionNames() {
+      	     return array_keys($this->map);
+      }
       
       public function contains($functionName) {
       	     return isset($this->map[(string)$functionName]);

@@ -150,8 +150,8 @@ class CallGraph {
 			 // created previously, so add an edge from the current node to all of these nodes.
 			 // Otherwise, it's a built-in library, so we add a generic node and add an edge.
 
-			 if(isset($functionSignatures[(string)$invokedFunctionName])) {
-			     foreach($functionSignatures[(string)$invokedFunctionName] as $name => $signature) {
+			 if($functionSignatures->contains($invokedFunctionName)) {
+			     foreach($functionSignatures->get($invokedFunctionName) as $signature) {
 			         $this->addEdge($callGraphNode, $this->getNode($signature));
 			     }
 
@@ -179,8 +179,8 @@ class CallGraph {
       // Add all the nodes from a map of function signatures.
       public function addAllNodesFromFunctionSignatures($functionSignatures) {
           
-	  foreach($functionSignatures as $name => $signatures) {
-	      foreach($signatures as $signature) {
+	  foreach($functionSignatures->getFunctionNames() as $name) {
+	      foreach($functionSignatures->get($name) as $signature) {
 	          $this->addNodeFromFunctionSignature($signature);
 	      }
 	  }
