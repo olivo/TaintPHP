@@ -321,15 +321,19 @@ function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 	     if($fileName && isset($cfgInfoMap[$fileName])) {
 	         $fileCFGInfo = $cfgInfoMap[$fileName];
 	         $cfg = $fileCFGInfo->getCFG($signature);
+		 print "Starting taint analysis on function with signature: " .
+                       ($signature->toString()) . "\n";
 	         $cfgTaintMap = cfgTaintAnalysis($cfg);
+		 print "Finished taint analysis on function with signature: " .
+                       ($signature->toString()) . "\n";
 		 $taintMap[$signature->toString()] = $cfgTaintMap;
-
 	     }
 
 	     // Add the predecessors in the call graph, if they're not already
 	     // present in the queue.
 	     foreach($callGraphNode->getPredecessors() as $predecessor) {
 	            if(!$callGraphNodeSet->contains($predecessor)) {
+		    	    
 		        $callGraphNodeSet->attach($predecessor);
 			$callGraphNodeQueue->enqueue($predecessor);	        
 		    }
