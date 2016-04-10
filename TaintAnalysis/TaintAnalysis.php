@@ -323,7 +323,7 @@ function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 	         $cfg = $fileCFGInfo->getCFG($signature);
 		 print "Starting taint analysis on function with signature: " .
                        ($signature->toString()) . "\n";
-	         $cfgTaintMap = cfgTaintAnalysis($cfg);
+	         $cfgTaintMap = cfgTaintAnalysis($cfg, $signature, $cfgInfoMap, $functionSignatures);
 		 print "Finished taint analysis on function with signature: " .
                        ($signature->toString()) . "\n";
 		 $taintMap[$signature->toString()] = $cfgTaintMap;
@@ -372,7 +372,7 @@ function fileTaintAnalysis($fileCFGInfo) {
 }
 
 // Performs a flow-sensitive forward taint analysis on a CFG.
-function cfgTaintAnalysis($cfg) {
+function cfgTaintAnalysis($cfg, $signature, $cfgInfoMap, $functionSignatures) {
 
 	 print "Starting Taint Analysis.\n";
 
