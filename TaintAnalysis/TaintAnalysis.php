@@ -10,6 +10,7 @@ include_once(dirname(__FILE__) . '/../CFG/StmtProcessing.php');
 include_once('TaintedVariables.php');
 include_once('CFGTaintMap.php');
 include_once('FileTaintMap.php');
+include_once('TaintMap.php');
 include_once('TaintSource.php');
 
 // Checks whether a conditional node is tainted.
@@ -293,7 +294,7 @@ function processTaint($current_node, $user_tainted_variables_map, $secret_tainte
 function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 
 	 // Global map of taint analysis results.
-	 $taintMap = array();
+	 $taintMap = new TaintMap();
 
 	 // Create a queue of call graph nodes of the functions to analyze.
 	 $callGraphNodeQueue = new SplQueue();
@@ -326,7 +327,7 @@ function taintAnalysis($callGraph, $cfgInfoMap, $functionSignatures) {
 	         $cfgTaintMap = cfgTaintAnalysis($cfg, $signature, $cfgInfoMap, $functionSignatures);
 		 print "Finished taint analysis on function with signature: " .
                        ($signature->toString()) . "\n";
-		 $taintMap[$signature->toString()] = $cfgTaintMap;
+		 $taintMap->put($signature->toString(), $cfgTaintMap);
 	     }
 
 	     // Add the predecessors in the call graph, if they're not already
